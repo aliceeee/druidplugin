@@ -81,6 +81,54 @@ export default class DruidDatasource {
     });
   }
 
+  // https://github.com/grafana-druid-plugin/druidplugin/issues/47
+  metricFindQuery(query: any) {
+
+    let druidSqlQuery = {
+      query: this.templateSrv.replace(query),
+      context: {
+        "sqlTimeZone": this.periodGranularity
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      this._druidQuery(druidSqlQuery, "/druid/v2/sql")
+        .then(
+          result => {
+            let variableData =
+              result.data
+                .map(row => {
+                  let vals = []
+                  for (let property in row) {
+                    vals.push({ "text": row[property] })
+                  }
+                  return vals;
+                })
+                .reduce((a, b) => {
+                  return a.concat(b)
+                })
+
+            resolve(variableData)
+          },
+          error => {
+            console.log(error.data.errorMessage)
+            reject(new Error(error.data.errorMessage))
+          }
+        )
+    })
+  }
+  _druidQuery(query, path = "/druid/v2/") {
+    let options = {
+      method: 'POST',
+      url: this.url + path,
+      data: query
+    };
+    console.log(this.url+path);
+    console.log("Make http request");
+    console.log(options);
+    return this.backendSrv.datasourceRequest(options);
+  };
+
   doQuery(from, to, granularity, target) {
     let datasource = target.druidDS;
     let filters = target.filters;
@@ -162,8 +210,8 @@ export default class DruidDatasource {
   }
 
   selectQuery(datasource: string, intervals: Array<string>, granularity: Druid.Granularity,
-              dimensions: Array<string | Object>, metric: Array<string | Object>, filters: Array<Druid.DruidFilter>,
-              selectThreshold: Object) {
+    dimensions: Array<string | Object>, metric: Array<string | Object>, filters: Array<Druid.DruidFilter>,
+    selectThreshold: Object) {
     let query: Druid.DruidSelectQuery = {
       "queryType": "select",
       "dataSource": datasource,
@@ -182,7 +230,7 @@ export default class DruidDatasource {
   };
 
   timeSeriesQuery(datasource: string, intervals: Array<string>, granularity: Druid.Granularity,
-                  filters: Array<Druid.DruidFilter>, aggregators: Object, postAggregators: Object) {
+    filters: Array<Druid.DruidFilter>, aggregators: Object, postAggregators: Object) {
     let query: Druid.DruidTimeSeriesQuery = {
       queryType: "timeseries",
       dataSource: datasource,
@@ -200,8 +248,8 @@ export default class DruidDatasource {
   };
 
   topNQuery(datasource: string, intervals: Array<string>, granularity: Druid.Granularity,
-            filters: Array<Druid.DruidFilter>, aggregators: Object, postAggregators: Object,
-            threshold: number, metric: string | Object, dimension: string | Object) {
+    filters: Array<Druid.DruidFilter>, aggregators: Object, postAggregators: Object,
+    threshold: number, metric: string | Object, dimension: string | Object) {
     const query: Druid.DruidTopNQuery = {
       queryType: "topN",
       dataSource: datasource,
@@ -222,8 +270,8 @@ export default class DruidDatasource {
   };
 
   groupByQuery(datasource: string, intervals: Array<string>, granularity: Druid.Granularity,
-               filters: Array<Druid.DruidFilter>, aggregators: Object, postAggregators: Object, groupBy: Array<string>,
-               limitSpec: Druid.LimitSpec) {
+    filters: Array<Druid.DruidFilter>, aggregators: Object, postAggregators: Object, groupBy: Array<string>,
+    limitSpec: Druid.LimitSpec) {
     const query: Druid.DruidGroupByQuery = {
       queryType: "groupBy",
       dataSource: datasource,

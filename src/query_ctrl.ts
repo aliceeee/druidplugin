@@ -27,6 +27,7 @@ export class DruidQueryCtrl extends QueryCtrl {
   customGranularity: any;
   target: any;
   datasource: any;
+  metricFindQuery: any;
 
   queryTypeValidators = {
     "timeseries": _.noop.bind(this),
@@ -44,6 +45,7 @@ export class DruidQueryCtrl extends QueryCtrl {
     "cardinality": _.partial(this.validateCardinalityAggregator.bind(this), 'cardinality'),
     "longSum": _.partial(this.validateSimpleAggregator.bind(this), 'longSum'),
     "doubleSum": _.partial(this.validateSimpleAggregator.bind(this), 'doubleSum'),
+    "doubleMax": _.partial(this.validateSimpleAggregator.bind(this), 'doubleMax'),
     "approxHistogramFold": this.validateApproxHistogramFoldAggregator.bind(this),
     "hyperUnique": _.partial(this.validateSimpleAggregator.bind(this), 'hyperUnique'),
     "thetaSketch": this.validateThetaSketchAggregator.bind(this)

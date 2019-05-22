@@ -1,3 +1,14 @@
+# Fork Update
+
+Fork from https://github.com/grafana-druid-plugin/druidplugin
+
+## Fix dashboard template variables
+
+Inspired from https://github.com/grafana-druid-plugin/druidplugin/issues/91 
+
+----
+Original Read Me
+
 # UPDATE
 
 We are working to refresh this codebase. Please see the [milestones](https://github.com/grafana-druid-plugin/druidplugin/milestones) for current estimated dates and related issues / projects for planned work. 
