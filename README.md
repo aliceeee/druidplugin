@@ -6,6 +6,13 @@ Fork from https://github.com/grafana-druid-plugin/druidplugin
 
 Inspired from https://github.com/grafana-druid-plugin/druidplugin/issues/91 
 
+## Other fix
+
+- allow to use template variables in other variables' query
+
+- allow Multi-value variables to work in filters of druid query
+  - Known issue: the filter may not work correctly if variable contains dot (any good ideas?)
+
 ----
 Original Read Me
 

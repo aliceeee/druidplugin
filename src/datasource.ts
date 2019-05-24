@@ -376,6 +376,16 @@ export default class DruidDatasource {
         if (filter.negate) {
           return { "type": "not", "field": finalFilter };
         }
+        
+        // alice: allow to use template variables in other variables' queryl
+        if(filter.value.length > 0 && filter.value.charAt(0) == "{"){
+          let longValue = filter.value.replace("{","").replace("}","");
+          let attrValue = longValue.split(","); // TODO if variables contains dot, 
+          return  {"type": "or", "fields": attrValue.map(v => {
+            return {"type": "selector","dimension": filter.dimension,"value": v.trim()}
+          })};
+        }
+
         return finalFilter;
       });
     if (replacedFilters) {
